@@ -8,15 +8,33 @@
 <body>
     <div id="app"></div>
     <script src="../dist/vue.js"></script>
+
+    <!-- vue2 中 模板编译 可以选择性的添加  runtimeOnly  只在运行时使用 （无法解析用户传递template属性 ） runtime with compiler （可以实现模板编译的） -->
     <script>
         const vm = new Vue({
             el:'#app',
             // 数据会被进行观测，响应式数据变化 我们对数据操作可以更新视图
             // 对对象的所有属性 使用defineProperty进行重新定义 get 和set
             data(){
-                return {msg:'zf',age:11,a:{a:1}}
-            }
+                return {msg:'zf',age:11,arr:[1,2,3,{a:1}]}
+            },
+            // js语法也可以使用ast 语法树来描述
+            // 1.实现一个解析器 可以解析html模板=> ast语法树 可以用一个树结构来描述 
+            // 2.虚拟节点是描述dom的 是使用对象来描述html的  ast语法树描述语法的  
+
+            // 将html本身变成js语法 render函数
+            // 如何将模板变成 render函数 =》 返回的是虚拟节点
+            template:`<div id="app" style="color:red"><span>helloworld {{msg}}</span></div>`,
+
+            // render(){ // vue 虚拟dom （跨平台）
+            //     with(vm._data){
+            //         return _c('div',{class:'a'},_c('span',null,123,_v('hello')+_v(age))+_v(msg)))
+            //     }
+            // }
         });
+       
+   
+
     </script>
 </body>
 </html>
