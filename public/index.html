@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../dist/vue.js"></script>
+    <script>
+        const vm = new Vue({
+            el:'#app',
+            // 数据会被进行观测，响应式数据变化 我们对数据操作可以更新视图
+            // 对对象的所有属性 使用defineProperty进行重新定义 get 和set
+            data(){
+                return {msg:'zf',age:11,a:{a:1}}
+            }
+        });
+    </script>
+</body>
+</html>
