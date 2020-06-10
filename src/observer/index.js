@@ -1,9 +1,30 @@
 import {isObject} from '../utils.js';
+import {arrayMethods} from './array'
 
 // es6的类来实现的
 class Observer{
     constructor(data){
-        this.walk(data); // 可以对数据一步一步的处理
+        // 对数组索引进行拦截 性能差而且直接更改索引的方式并不多
+        Object.defineProperty(data,'__ob__',{ // __ob__ 是一个响应式饿表示 对象数组都有
+            enumerable:false, // 不可枚举
+            configurable:false,
+            value:this
+        })
+        // data.__ob__ = this; // 相当于在数据上可以获取到__ob__这个属性 指代的是Observer的实例
+        if(Array.isArray(data)){
+            // vue如何对数组进行处理呢？ 数组用的是重写数组的方法  函数劫持
+            // 改变数组本身的方法我就可以监控到了
+            data.__proto__ = arrayMethods; // 通过原型链 向上查找的方式
+            // [{a:1}]    => arr[0].a = 100
+            this.observeArray(data);
+        }else{
+            this.walk(data); // 可以对数据一步一步的处理
+        }
+    }
+    observeArray(data){
+        for(let i =0 ; i< data.length;i++){
+            observe(data[i]);// 检测数组的对象类型
+        }
     }
     walk(data){
         // 对象的循环   data:{msg:'zf',age:11}
@@ -33,6 +54,9 @@ export function observe(data){
     // 如果这个数据不是对象 或者是null 那就不用监控了
     if(!isObject(data)){
         return;
+    }
+    if(data.__ob__ instanceof Observer){ // 防止对象被重复观测
+        return ;
     }
     
     // 对数据进行defineProperty
