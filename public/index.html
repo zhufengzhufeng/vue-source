@@ -6,7 +6,13 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="app"></div>
+    <div id="app">xxxx
+        {{msg}} {{arr}} hello world 
+        <p>
+            hello world {{age}}
+        </p>
+    </div>
+    
     <script src="../dist/vue.js"></script>
 
     <!-- vue2 中 模板编译 可以选择性的添加  runtimeOnly  只在运行时使用 （无法解析用户传递template属性 ） runtime with compiler （可以实现模板编译的） -->
@@ -24,14 +30,13 @@
 
             // 将html本身变成js语法 render函数
             // 如何将模板变成 render函数 =》 返回的是虚拟节点
-            template:`<div id="app" style="color:red"><span>helloworld {{msg}}</span></div>`,
-
             // render(){ // vue 虚拟dom （跨平台）
             //     with(vm._data){
             //         return _c('div',{class:'a'},_c('span',null,123,_v('hello')+_v(age))+_v(msg)))
             //     }
             // }
         });
+ 
        
    
 

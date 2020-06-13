@@ -13,17 +13,50 @@ const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s
 const startTagClose = /^\s*(\/?)>/; // 匹配标签结束的 >
 // 匹配动态变量的  +? 尽可能少匹配
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g
-
 export function parseHTML(html) {
+    // ast 树 表示html的语法
+    let root; // 树根 
+    let currentParent;
+    let stack = []; // 用来判断标签是否正常闭合  [div]  解析器可以借助栈型结构
+    // <div id="app" style="color:red"><span>    helloworld {{msg}}   </span></div>
 
-    function start(tagName, attrs) {
-        console.log(tagName,attrs)
+    // vue2.0 只能有一个根节点 必须是html 元素
+
+    // 常见数据结构 栈 队列 数组 链表 集合 hash表 树
+    function createASTElement(tagName,attrs){
+        return {
+            tag:tagName,
+            attrs,
+            children:[],
+            parent:null,
+            type:1 // 1 普通元素  3 文本
+        }
     }
-    function end(tagName) {
-        console.log(tagName)
+    // console.log(html)
+    function start(tagName, attrs) { // 开始标签 每次解析开始标签 都会执行此方法
+        let element  = createASTElement(tagName,attrs);
+        if(!root){
+            root = element; // 只有第一次是根
+        }
+        currentParent = element;
+        stack.push(element);
     }
-    function chars(text) {
-        console.log(text)
+    function end(tagName) {  // 结束标签  确立父子关系
+        let element = stack.pop();
+        let parent = stack[stack.length-1];
+        if(parent){
+            element.parent = parent;
+            parent.children.push(element);
+        }
+    }
+    function chars(text) { // 文本
+       text = text.replace(/\s/g,'');
+       if(text){
+        currentParent.children.push({
+            type:3,
+            text
+        })
+       }
     }
     // 根据 html 解析成树结构  </span></div>
     while (html) {
@@ -78,5 +111,7 @@ export function parseHTML(html) {
             }
         }
     }
+
+    return root;
 
 }
