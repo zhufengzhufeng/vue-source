@@ -1,5 +1,6 @@
 import {isObject} from '../utils.js';
 import {arrayMethods} from './array'
+import Dep from './dep.js';
 
 // es6的类来实现的
 class Observer{
@@ -36,14 +37,24 @@ class Observer{
 // vue2 的性能 递归重写get和set  proxy
 function defineReactive(data,key,value){
     observe(value); // 如果传入的值还是一个对象的话 就做递归循环检测
+    let dep = new Dep(); // msg.dep =[watcher]  age.dep = [watcher]  // 渲染watcher中.deps [msg.dep,age.dep]
     Object.defineProperty(data,key,{
         get(){
+            // 这里会有取值的操作  ，给这个属性增加一个dep，这个dep 要和刚才我放到全局变量的上的watcher 做一个对应关系
+            if(Dep.target){
+                dep.depend(); // 让这个dep 去收集watcher
+            }
             return value
         },
         set(newValue){
             if(newValue == value) return;
             observe(newValue); // 监控当前设置的值，有可能用户给了一个新值
             value = newValue;
+
+            // 当我们更新数据后 要把当前自己对应的watcher 去重新执行以下 
+            dep.notify();
+
+
         }
     })
 }

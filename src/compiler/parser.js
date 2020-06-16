@@ -23,40 +23,42 @@ export function parseHTML(html) {
     // vue2.0 只能有一个根节点 必须是html 元素
 
     // 常见数据结构 栈 队列 数组 链表 集合 hash表 树
-    function createASTElement(tagName,attrs){
+    function createASTElement(tagName, attrs) {
         return {
-            tag:tagName,
+            tag: tagName,
             attrs,
-            children:[],
-            parent:null,
-            type:1 // 1 普通元素  3 文本
+            children: [],
+            parent: null,
+            type: 1 // 1 普通元素  3 文本
         }
     }
     // console.log(html)
     function start(tagName, attrs) { // 开始标签 每次解析开始标签 都会执行此方法
-        let element  = createASTElement(tagName,attrs);
-        if(!root){
+        let element = createASTElement(tagName, attrs);
+        if (!root) {
             root = element; // 只有第一次是根
         }
         currentParent = element;
         stack.push(element);
     }
-    function end(tagName) {  // 结束标签  确立父子关系
+    // <div> <span></span> hello world</div>   [div,span]
+    function end(tagName) { // 结束标签  确立父子关系
         let element = stack.pop();
-        let parent = stack[stack.length-1];
-        if(parent){
-            element.parent = parent;
-            parent.children.push(element);
+        currentParent = stack[stack.length - 1];
+        if (currentParent) {
+            element.parent = currentParent;
+            currentParent.children.push(element);
         }
     }
+
     function chars(text) { // 文本
-       text = text.replace(/\s/g,'');
-       if(text){
-        currentParent.children.push({
-            type:3,
-            text
-        })
-       }
+        text = text.replace(/\s/g, '');
+        if (text) {
+            currentParent.children.push({
+                type: 3,
+                text
+            })
+        }
     }
     // 根据 html 解析成树结构  </span></div>
     while (html) {
@@ -66,7 +68,7 @@ export function parseHTML(html) {
 
             if (startTageMatch) {
                 // 开始标签
-                start(startTageMatch.tagName,startTageMatch.attrs)
+                start(startTageMatch.tagName, startTageMatch.attrs)
             }
             const endTagMatch = html.match(endTag);
 
