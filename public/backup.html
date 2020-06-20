@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app"><span style="color:red">123</span> hello {{msg}} {{msg}} {{msg}}
+        {{age}}
+    </div>
+
+    <script src="../dist/vue.js"></script>
+
+    <!-- vue2 中 模板编译 可以选择性的添加  runtimeOnly  只在运行时使用 （无法解析用户传递template属性 ） runtime with compiler （可以实现模板编译的） -->
+    <script>
+        // Vue.mixin Vue.extend... 静态方法
+        // Vue.mixin({
+        //     // 合并策略非常的多 data computed watch props
+        //     // 生命周期的合并策略
+        //     data() {
+        //         return { a: 100 }
+        //     },
+        //     b: 2,
+        //     created() {
+        //         console.log('mixin 1')
+        //     },
+        //     beforeCreate() {
+        //         console.log('beforeCreate1')
+        //     }
+        // });
+        // Vue.mixin({
+        //     a: { b: 2 },
+        //     c: 3,
+        //     // 合并策略非常的多 data computed watch props
+        //     // 生命周期的合并策略
+        //     created() {
+
+        //     },
+        //     beforeCreate() {
+        //         console.log('beforeCreate2')
+        //     }
+
+        // })
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return { msg: 'zf', age: 11, arr: [1, 2, 3, { a: 1 }] }
+            },
+            created() {
+                console.log('created inner');
+            }
+        });
+        setTimeout(() => {
+            // 给每个属性 增加一个dep属性 这个属性里可以包含多个watcher
+            vm.msg = 'jw'; // 记录一下当前这个msg 对应了一个watcher
+            vm.msg = '1';
+            vm.msg = '2';
+            vm.msg = '3';
+            vm.age = 10;
+
+
+            console.log(vm.$nextTick)
+
+            vm.$nextTick(()=>{
+                console.log(app.innerHTML)
+            })
+        
+
+        }, 1000);
+
+
+        // Vue中实现了响应式系统 就是如果属性变化了 视图会自动更新
+
+        // 依赖收集 每个属性 都会对应 一个自己重新渲染的方法 watcher
+    </script>
+</body>
+
+</html>
+
+<!-- 新一期架构课 下次开班时间是 下周日  -->
